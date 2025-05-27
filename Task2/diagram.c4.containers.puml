@@ -1,0 +1,34 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(patient, "Patient", "Пациент")
+Person(receptionist, "Receptionist", "Сотрудник ресепшена")
+Person(doctor, "Doctor", "Медицинский специалист")
+Person(admin, "Administrator", "Системный администратор")
+System_Boundary(medikamente, "Medikamente System") {
+
+  Container(webPortal, "Web Portal", "React", "Веб-портал")
+  Container(mobileApp, "Mobile App", "Flutter", "Мобильное приложение")
+  Container(apiGateway, "API Gateway", "Java", "Единая точка входа для всех внешних API-запросов")
+  Container(backendApp, "Backend App", "Spring Boot + Java", "Работает с медицинскими картами, расписанием и пользователями")
+  Container(database, "Database", "PostgreSQL", "Хранение информации о пациентах, визитах, анализах, расписании")
+  Container(objectStorage, "Object Storage", "S3", "Хранение файлов: сканы, PDF, результаты анализов")
+  Container(labIntegration, "Lab API Adapter", "Java", "Интеграция с лабораторной системой через защищённый API")
+  Container(notificationService, "Notification Service", "Java", "Отправка уведомлений")
+  Container(authService, "Auth Service", "Keycloak", "Авторизация и аутентификация (OIDC, RBAC)")
+
+  Rel(patient, webPortal, "Запись", "HTTPS")
+  Rel(patient, mobileApp, "Запись", "HTTPS")
+  Rel(webPortal, apiGateway, "API запрос", "HTTPS + JWT")
+  Rel(mobileApp, apiGateway, "API запрос", "HTTPS + JWT")
+  Rel(apiGateway, backendApp, "API запрос", "gRPC / REST")
+  Rel(backendApp, database, "Чтение/запись данных")
+  Rel(backendApp, objectStorage, "Работа с файлами")
+  Rel(backendApp, labIntegration, "Получение результатов исследований")
+  Rel(backendApp, notificationService, "Отправка уведомлений")
+  Rel(backendApp, authService, "Авторизация")
+  Rel(authService, database, "Пользовательские данные и роли")
+  Rel(receptionist, webPortal, "Внутреннее взаимодействие + RBAC", "HTTPS")
+  Rel(doctor, webPortal, "Внутреннее взаимодействие + RBAC", "HTTPS")
+}
+@enduml
