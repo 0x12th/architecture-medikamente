@@ -1,0 +1,43 @@
+@startuml
+title DFD: Приём пациентов - To-Do версия
+
+actor Пациент as Patient
+
+rectangle "Ресепшен" as Reception {
+}
+
+database "Excel файлы\n(Общий диск)" as ExcelStorage
+database "Медицинские карты\n(Сканы на диске)" as MedCardsStorage
+rectangle "Медицинские специалисты" as MedSpecialists
+
+Patient --> Reception : Ввод персональных данных\n(ФИО, дата рождения,\nконтакты, история болезни)
+
+Reception --> ExcelStorage : Запись данных пациента\n(НЕшифрованные Excel-файлы)\n[To-Do: перейти на централизованное хранилище с шифрованием]
+Reception --> MedCardsStorage : Передача медкарт и анализов\n(сканы, PDF, JPG)\n[To-Do: хранить в защищённом и тегированном хранилище]
+
+Reception --> MedSpecialists : Передача данных о записи\nи пациента\n[To-Do: разграничение доступа RBAC/ABAC]
+
+note right of Reception
+  To-Do задачи:
+  * Внедрить централизованное хранилище данных (PostgreSQL)
+  * Шифрование данных в покое и при передаче (TLS, AES-256)
+  * Механизм тегирования данных (PII, MED_DATA)
+  * Аудит доступа и журналирование
+  * Разграничение доступа на уровне ролей
+end note
+
+note left of ExcelStorage
+  Проблемы:
+  * Не централизованное хранилище
+  * Данные хранятся в открытом виде
+  * Отсутствует аудит и контроль доступа
+end note
+
+note left of MedCardsStorage
+  Проблемы:
+  * Сканы и файлы без защиты
+  * Нет тегирования данных
+  * Нет контроля доступа
+end note
+
+@enduml
